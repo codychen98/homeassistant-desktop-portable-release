@@ -1,6 +1,7 @@
 node_modules
 dist
 data
+package.json.tmp
 eslint.config.mjs
 eslint.config.js
 .idea
