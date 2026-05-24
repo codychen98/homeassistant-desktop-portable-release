@@ -348,6 +348,14 @@ function getMenu() {
       },
     },
     {
+      label: "Close Button Exits App",
+      type: "checkbox",
+      checked: config.get("quitOnWindowClose"),
+      click: () => {
+        config.set("quitOnWindowClose", !config.get("quitOnWindowClose"));
+      },
+    },
+    {
       label: "Stay on Top",
       type: "checkbox",
       checked: config.get("stayOnTop"),
@@ -809,6 +817,12 @@ async function createMainWindow(show = false) {
 
   mainWindow.on("close", (e) => {
     if (!forceQuit) {
+      if (config.get("quitOnWindowClose")) {
+        forceQuit = true;
+        app.quit();
+        return;
+      }
+
       mainWindow.hide();
       e.preventDefault();
     }

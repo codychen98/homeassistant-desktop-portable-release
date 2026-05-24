@@ -2,7 +2,7 @@
 
 Portable Windows builds of [DustyArmstrong/homeassistant-desktop](https://github.com/DustyArmstrong/homeassistant-desktop). Extract a zip, run the exe, and keep all app data in a `data` folder beside the executable (not `%APPDATA%`).
 
-This fork removes auto-start at login and in-app update checks. Optional **Show Window on Startup** is in the tray menu (right-click the tray icon).
+This fork removes auto-start at login and in-app update checks. Optional tray options: **Show Window on Startup**, **Close Button Exits App** (X quits instead of hiding to tray).
 
 ## Automatic upstream sync
 
