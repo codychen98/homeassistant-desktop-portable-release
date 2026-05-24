@@ -1,9 +1,9 @@
 name: Build/release
 
+# Upstream installer matrix; disabled on this fork (no signing secrets).
+# Portable Windows releases use release-windows-portable.yml instead.
 on:
-  push:
-    tags:
-      - "*"
+  workflow_dispatch:
 
 jobs:
   release:
