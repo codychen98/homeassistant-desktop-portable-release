@@ -76,12 +76,7 @@ jobs:
           if git diff --staged --quiet; then
             echo "No changes after overlay; creating tag only."
           else
-            git commit -m "$(cat <<EOF
-Sync upstream release ${TAG_NAME}
-
-Automated merge from DustyArmstrong/homeassistant-desktop with portable overlay applied.
-EOF
-)"
+            git commit -m "Sync upstream release ${TAG_NAME}" -m "Automated merge from DustyArmstrong/homeassistant-desktop with portable overlay applied."
           fi
 
           git tag -a "${TAG}" -m "Portable release ${TAG} (synced from upstream ${TAG_NAME})"
@@ -97,9 +92,4 @@ EOF
         run: |
           gh issue create \
             --title "Upstream sync failed for ${TAG}" \
-            --body "$(cat <<EOF
-Automated sync from [upstream release](${UPSTREAM_URL}) failed.
-
-Check the [workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) for logs. You may need to update files under \`portable-overlay/\` and re-run **Sync upstream release**.
-EOF
-)"
+            --body "Automated sync from upstream release ${UPSTREAM_URL} failed. Check the workflow run at ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}. You may need to update files under portable-overlay/ and re-run Sync upstream release."
