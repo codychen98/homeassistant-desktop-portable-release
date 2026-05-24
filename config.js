@@ -3,7 +3,6 @@ import Store from 'electron-store';
 
 const store = new Store({
   defaults: {
-    autoUpdate: true,
     automaticSwitching: true,
     autoReconnect: true,
     detachedMode: false,

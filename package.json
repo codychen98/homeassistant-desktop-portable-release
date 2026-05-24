@@ -1,11 +1,11 @@
 {
-  "name": "homeassistant-desktop",
+  "name": "homeassistant-desktop-portable",
   "repository": {
     "type": "git",
-    "url": "https://github.com/DustyArmstrong/homeassistant-desktop"
+    "url": "https://github.com/codychen98/homeassistant-desktop-portable-release"
   },
   "version": "1.6.10",
-  "description": "Desktop App (Windows / macOS / Linux) for Home Assistant built with Electron",
+  "description": "Windows portable fork of Home Assistant Desktop (data beside executable, no installer)",
   "author": "Dusty Armstrong <dusty@dustcloud.dev>",
   "license": "Apache-2.0",
   "type": "module",
@@ -18,17 +18,15 @@
     "build-local-linux-arm": "electron-builder build --linux appimage deb rpm --arm64 --publish never",
     "build-local-win": "electron-builder build --win --x64 --publish never",
     "build-local-win-arm": "electron-builder build --win --arm64 --publish never",
+    "build-win-portable": "electron-builder build --win dir --x64 --publish never",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "auto-launch": "~5.0.6",
     "axios": "~1.13.6",
     "bonjour-service": "~1.3.0",
     "electron-log": "~5.4.3",
     "electron-store": "~11.0.2",
-    "electron-traywindow-positioner": "~1.2.1",
-    "electron-updater": "~6.8.3",
-    "semver": "~7.7.4"
+    "electron-traywindow-positioner": "~1.2.1"
   },
   "devDependencies": {
     "@eslint/js": "~10.0.1",
@@ -57,7 +55,15 @@
       }
     },
     "win": {
-      "icon": "./build/iconwin.png"
+      "icon": "./build/iconwin.png",
+      "target": [
+        {
+          "target": "dir",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
     },
     "linux": {
       "category": "public.app-category.productivity",

@@ -1,10 +1,9 @@
 import { app, dialog, ipcMain, shell, globalShortcut, screen, Menu, Tray, BrowserWindow, powerMonitor } from "electron";
-import AutoLaunch from "auto-launch";
+import "./portable-paths.js";
 import Positioner from "electron-traywindow-positioner";
 import Bonjour from "bonjour-service";
 import logger from "electron-log";
 import config  from "./config.js";
-import semver from "semver";
 import http from 'http';
 import https from 'https';
 import axios from 'axios';
@@ -28,8 +27,6 @@ if (process.platform === "darwin") {
   app.dock.hide();
 }
 
-const autoLauncher = new AutoLaunch({ name: "Home Assistant Desktop" });
-
 const __dirname = import.meta.dirname;
 const indexFile = `file://${__dirname}/web/index.html`;
 const errorFile = `file://${__dirname}/web/error.html`;
@@ -39,7 +36,6 @@ const httpAgent = new http.Agent({ keepAlive: true, maxSockets: 8 });
 const httpsAgent = new https.Agent({ keepAlive: true, maxSockets: 8 });
 
 let initialized = false;
-let autostartEnabled = false;
 let forceQuit = false;
 let resizeEvent = false;
 let retryingAvailability = false;
@@ -67,41 +63,6 @@ function registerKeyboardShortcut() {
 function unregisterKeyboardShortcut() {
   globalShortcut.unregisterAll();
 }
-
-async function checkForUpdates() {
-  try {
-    const apiResponse = await fetch("https://api.github.com/repos/DustyArmstrong/homeassistant-desktop/releases/latest");
-    const apiData = await apiResponse.json();
-    const latestVersion = apiData.tag_name;
-    const currentVersion = app.getVersion();
-
-    if (semver.gt(latestVersion, currentVersion)) {
-      const versionMessage = await dialog.showMessageBox({
-        type: "question",
-        buttons: ["Download", "Not Now"],
-        title: "Update Available",
-        message: `A new version of Home Assistant Desktop is available (${currentVersion} --> ${latestVersion})`,
-      });
-      if (versionMessage.response === 0) {
-        await shell.openExternal("https://github.com/DustyArmstrong/homeassistant-desktop/releases/latest");
-        } 
-      }
-    } catch (error) {
-      logger.error(`UPDT - ${error}`);
-    }
-  }
-
-function checkAutoStart() {
-  autoLauncher
-    .isEnabled()
-    .then((isEnabled) => {
-      autostartEnabled = isEnabled;
-    })
-    .catch((error) => {
-      logger.error(`AUTOST - ${error}`);
-    });
-}
-
 
 async function availabilityCheck() {
   const instance = currentInstance();
@@ -392,20 +353,6 @@ function getMenu() {
       },
     },
     {
-      label: "Start at Login",
-      type: "checkbox",
-      checked: autostartEnabled,
-      click: () => {
-        if (autostartEnabled) {
-          autoLauncher.disable();
-        } else {
-          autoLauncher.enable();
-        }
-
-        checkAutoStart();
-      },
-    },
-    {
       label: "Shortcuts",
       submenu: [
         {
@@ -626,20 +573,6 @@ function getMenu() {
     {
       label: `v${app.getVersion()}`,
       enabled: false,
-    },
-    {
-      label: "Check for Updates",
-      click: async () => {
-        checkForUpdates();
-      },
-    },
-    {
-      label: "Enable Update Check on Startup",
-      type: "checkbox",
-      checked: config.get("autoUpdate"),
-      click: async () => {
-        config.set("autoUpdate", !config.get("autoUpdate"));
-      },
     },
     {
       label: "Enable Automatic Reconnect",
@@ -1119,15 +1052,10 @@ if (!gotTheLock) {
 }
 
   app.whenReady().then(async () => {
-    checkAutoStart();
     sleepHandled = false;
     resumeHandled = false;
 
     await createMainWindow(!config.has("currentInstance"));
-
-    if (config.get("autoUpdate") === true) {
-      checkForUpdates();
-    }
 
     if (process.platform === "linux") {
       tray.setContextMenu(getMenu());
@@ -1150,10 +1078,6 @@ if (!gotTheLock) {
 
     if (!config.has("currentInstance")) {
       config.set("disableHover", true);
-    }
-
-    if (!config.has("autoUpdate")) {
-      config.set("autoUpdate", true);
     }
   });
 
