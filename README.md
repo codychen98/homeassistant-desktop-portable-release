@@ -1,87 +1,41 @@
-# Home Assistant - Desktop
+# Home Assistant Desktop (Windows portable)
 
-Desktop App (Windows / macOS / Linux) for [Home Assistant](https://www.home-assistant.io/) built with [Electron](https://www.electronjs.org)
+Windows **portable** fork of [DustyArmstrong/homeassistant-desktop](https://github.com/DustyArmstrong/homeassistant-desktop). No installer — extract, run, and copy the whole folder anywhere.
 
-![Home Assistant - Desktop](https://raw.githubusercontent.com/DustyArmstrong/homeassistant-desktop/master/media/screenshot.png)
+**[Download latest release](https://github.com/codychen98/homeassistant-desktop-portable-release/releases/latest)** (x64 zip)
 
-This project is fork from [iprodanovbg/homeassistant-desktop](https://github.com/iprodanovbg/) and [mrvnklm/homeassistant-desktop](https://github.com/mrvnklm/). 
+## How this differs from upstream
 
-## Project Status
+| | Upstream | This fork |
+|---|----------|-----------|
+| Install | Installer (`.exe`) | Portable zip |
+| App data | `%APPDATA%` | `data/` folder next to the `.exe` |
+| Auto-start at login | Optional | Removed |
+| In-app update prompts | Yes | Removed |
+| Show window on startup | No | Optional (tray menu) |
+| Close button (**X**) | Hides to tray | Optional: quit app (tray menu) |
+| Builds | Windows, macOS, Linux | Windows x64 portable only |
 
-**A note on NPM supply chain attacks:** Attacks on NPM packages have become increasingly common. While the version of Axios used in this project is not implicated in that compromise (no associated CVE), I do however feel it necessary to take some steps to try and reduce the impact of future incidents. This project is maintained entirely by a human - in some ways this benefits things as I'm slow to update deps anyway (partly for this reason!) and don't automate everything, but I will try and take more of a hardline approach to dep audits going forward. 
+Everything else matches upstream (tray, global shortcut, Bonjour discovery, multiple HA instances, reconnect, etc.).
 
-As of August 2025, the previous version of this project produced by [iprodanovbg](https://github.com/iprodanovbg/) has been archived. Given it is unlikely to return to active development, I will continue to maintain my own version here for as long as people wish to use it. The project is currently in a stable iteration, but I would like to leverage this/a future application to more tightly integrate with Home Assistant itself (device sensors etc.) when I have time. This is highly dependent on my availability, but contributions are welcome. 
+## Data layout
 
-I hope this project can be of some use to others if you like/liked the app! Issues are open to submit if you have any, though please be aware I may not be able to resolve all issues quickly or comprehensively - I will do my best.
+```
+YourFolder/
+  Home Assistant Desktop.exe
+  data/              ← settings and cache (created on first run)
+```
 
-## Installation
+Back up or move the entire folder to keep your configuration.
 
-Just download the latest version for your platform from the [release section](https://github.com/DustyArmstrong/homeassistant-desktop/releases/latest) and install!
+## Updates
 
-## Usage / Features
+When [upstream](https://github.com/DustyArmstrong/homeassistant-desktop/releases) publishes a new release, this repo syncs automatically (twice daily) and publishes a matching portable zip on [Releases](https://github.com/codychen98/homeassistant-desktop-portable-release/releases).
 
-- hover / click the tray icon to open the app
-- supports multiple instances of Home Assistant (including automatic switching)
-- automatic instance discovery using bonjour
-- automatic reconnection to your instance on connection loss
-- right-click context menu for settings / reset / quit the app
-- global keyboard shortcut (defaults to Cmd/Ctrl + Alt + X but can be changed) can be enabled to show / hide Home Assistant
-- fullscreen mode (Cmd/Ctrl + Alt + Return)
-- automatic update checks (if not disabled in context menu)
+Fork-only fixes between upstream versions use tags like `v1.6.10-portable.2`.
 
-## Notes & known issues
+## Credit
 
-- at present support for self-signed certificates is YMMV (I recommend using Let's Encrypt to resolve this, though it is something I'll try to work on)
-- support for Linux distros may vary, app tested on Debian-based flavors (XORG) but detailed feedback is welcome
-- support for Wayland is limited - the application will still run however a number of Electron's features aren't implemented yet (e.g. shortcuts, checkbox display)
-- if using "detached window" on Windows, instead of dragging, you have to resize it to move it
+Based on [homeassistant-desktop](https://github.com/DustyArmstrong/homeassistant-desktop) (Apache-2.0). See [LICENSE.md](LICENSE.md).
 
-### Linux Window Position
-
-Per above, Wayland does not support - at least in any straightforward manner for this particular project - programmatic window positioning. Some users have had success with Remember Window Positions - https://github.com/rxappdev/RememberWindowPositions. This tool allows you to manage your window positions for many applications running under Wayland, not just HA Desktop. 
-
-This section will be updated to reflect any other solutions as needed. At this time, window positioning on Wayland is not something this project can effectively handle within its own scope. 
-
-## Troubleshooting
-
-### Visual issues
-
-If you experience visual issues with your Home Assistant dashboards when using Home Assistant Desktop, in particular if these are not consistent with your external web browser, this is most often caused by cached content. A function is present in the application to remove several layers of cache - in most cases the basic (soft) clear should suffice. You can find this and other options under the **Clear Application Data** menu. Should this fail, a hard clear (includes session storage) is the next best option. 
-
-If everything fails, you can manually clear the cache by removing all the content from:
-
-Windows:
-
-`%appdata%\homeassistant-desktop\Cache\*`
-
-Mac:
-
-`/Users/{user}/Library/Application Support/homeassistant-desktop/Cache/*`
-
-Linux (may vary on your system):
-
-`~/.config/homeassistant-desktop/Cache/*`
-
-Additionally, please also clear the cache in your external web browser to confirm the issue only occurs with Home Assistant Desktop.
-
-## Contributing
-
-Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
-
-## License and Author
-
-Copyright 2024-2026, [Dusty Armstrong](https://github.com/DustyArmstrong)\
-Copyright 2022-2023, [Ivan Prodanov](https://github.com/iprodanovbg)\
-Copyright 2020-2021, [Marvin Kelm](https://github.com/mrvnklm)
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    https://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+Maintainer notes: [README-PORTABLE.md](README-PORTABLE.md)
