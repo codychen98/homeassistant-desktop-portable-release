@@ -340,6 +340,14 @@ function getMenu() {
       },
     },
     {
+      label: "Show Window on Startup",
+      type: "checkbox",
+      checked: config.get("showOnStartup"),
+      click: () => {
+        config.set("showOnStartup", !config.get("showOnStartup"));
+      },
+    },
+    {
       label: "Stay on Top",
       type: "checkbox",
       checked: config.get("stayOnTop"),
@@ -814,7 +822,7 @@ async function createMainWindow(show = false) {
 
   mainWindow.setAlwaysOnTop(!!config.get("stayOnTop"));
 
-  if (initialized && (mainWindow.isAlwaysOnTop() || show)) {
+  if (show || config.get("showOnStartup") || (initialized && mainWindow.isAlwaysOnTop())) {
     showWindow();
   }
 

@@ -7,6 +7,7 @@ const store = new Store({
     autoReconnect: true,
     detachedMode: false,
     disableHover: false,
+    showOnStartup: false,
     stayOnTop: false,
     fullScreen: false,
     shortcutEnabled: true,
