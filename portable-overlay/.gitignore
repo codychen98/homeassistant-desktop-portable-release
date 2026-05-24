@@ -1,0 +1,7 @@
+node_modules
+dist
+data
+eslint.config.mjs
+eslint.config.js
+.idea
+.DS_Store

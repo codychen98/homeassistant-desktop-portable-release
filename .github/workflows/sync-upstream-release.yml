@@ -1,0 +1,105 @@
+name: Sync upstream release
+
+on:
+  schedule:
+  - cron: "0 8,20 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: sync-upstream-release
+  cancel-in-progress: false
+
+jobs:
+  sync-and-tag:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check upstream latest release
+        id: upstream
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          release="$(gh api repos/DustyArmstrong/homeassistant-desktop/releases/latest)"
+          tag_name="$(echo "$release" | jq -r '.tag_name')"
+          version="${tag_name#v}"
+          tag="v${version}"
+          echo "tag_name=${tag_name}" >> "$GITHUB_OUTPUT"
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+          echo "tag=${tag}" >> "$GITHUB_OUTPUT"
+          echo "html_url=$(echo "$release" | jq -r '.html_url')" >> "$GITHUB_OUTPUT"
+
+      - name: Skip if tag already exists
+        id: check
+        env:
+          TAG: ${{ steps.upstream.outputs.tag }}
+        run: |
+          set -euo pipefail
+          if git ls-remote --exit-code origin "refs/tags/${TAG}" >/dev/null 2>&1; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "Already built ${TAG}; nothing to do."
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/setup-node@v4
+        if: steps.check.outputs.skip != 'true'
+        with:
+          node-version: 22
+
+      - name: Merge upstream and apply portable overlay
+        if: steps.check.outputs.skip != 'true'
+        env:
+          VERSION: ${{ steps.upstream.outputs.version }}
+          TAG: ${{ steps.upstream.outputs.tag }}
+          TAG_NAME: ${{ steps.upstream.outputs.tag_name }}
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git remote add upstream https://github.com/DustyArmstrong/homeassistant-desktop.git || true
+          git fetch upstream master
+
+          git merge upstream/master --no-edit || true
+          bash scripts/apply-portable-overlay.sh "${VERSION}"
+
+          git add -A
+          if git diff --staged --quiet; then
+            echo "No changes after overlay; creating tag only."
+          else
+            git commit -m "$(cat <<EOF
+Sync upstream release ${TAG_NAME}
+
+Automated merge from DustyArmstrong/homeassistant-desktop with portable overlay applied.
+EOF
+)"
+          fi
+
+          git tag -a "${TAG}" -m "Portable release ${TAG} (synced from upstream ${TAG_NAME})"
+          git push origin master
+          git push origin "${TAG}"
+
+      - name: Open issue on failure
+        if: failure() && steps.check.outputs.skip != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.upstream.outputs.tag }}
+          UPSTREAM_URL: ${{ steps.upstream.outputs.html_url }}
+        run: |
+          gh issue create \
+            --title "Upstream sync failed for ${TAG}" \
+            --body "$(cat <<EOF
+Automated sync from [upstream release](${UPSTREAM_URL}) failed.
+
+Check the [workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) for logs. You may need to update files under \`portable-overlay/\` and re-run **Sync upstream release**.
+EOF
+)"
