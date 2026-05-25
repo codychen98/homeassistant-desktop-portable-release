@@ -15,6 +15,7 @@ Windows **portable** fork of [DustyArmstrong/homeassistant-desktop](https://gith
 | Show window on startup | No | Optional (tray menu) |
 | Close button (**X**) | Hides to tray | Optional: quit app (tray menu) |
 | Refresh page | Not available | **F5** reloads the dashboard when the window is focused |
+| Dashboard updates while unfocused | Browser-dependent | HA page keeps updating when another app is active (reduced background throttling) |
 | Builds | Windows, macOS, Linux | Windows x64 portable only |
 
 Everything else matches upstream (tray, global shortcut, Bonjour discovery, multiple HA instances, reconnect, etc.).

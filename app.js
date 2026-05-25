@@ -1,5 +1,10 @@
 import { app, dialog, ipcMain, shell, globalShortcut, screen, Menu, Tray, BrowserWindow, powerMonitor } from "electron";
 import "./portable-paths.js";
+import {
+  applyPortableBackgroundPolicy,
+  portableWebPreferences,
+  registerPortableBackgroundUpdates,
+} from "./portable-background-updates.js";
 import { registerPortableF5Refresh } from "./portable-f5-refresh.js";
 import Positioner from "electron-traywindow-positioner";
 import Bonjour from "bonjour-service";
@@ -19,6 +24,7 @@ if (config.get("forceScaling")) {
   app.commandLine.appendSwitch('force-device-scaling-factor', config.get("scaleFactor"));
 }
 
+applyPortableBackgroundPolicy();
 
 logger.errorHandler.startCatching();
 logger.info(`${app.name} started`);
@@ -690,6 +696,7 @@ async function createMainWindow(show = false) {
       nodeIntegration: false,
       contextIsolation: true,
       preload: path.join(__dirname, 'web', 'preload.cjs'),
+      ...portableWebPreferences,
     },
   });
 
@@ -721,6 +728,7 @@ async function createMainWindow(show = false) {
   createTray();
 
   registerPortableF5Refresh(mainWindow, () => config.get("allInstances") ?? []);
+  registerPortableBackgroundUpdates(mainWindow, () => config.get("allInstances") ?? []);
 
   mainWindow.webContents.on('did-fail-load', async (e, errorCode, validatedURL) => {
     logger.error(`WEBCONT - ${validatedURL} (code ${errorCode})`);
