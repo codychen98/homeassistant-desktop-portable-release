@@ -5,6 +5,7 @@ import {
   portableWebPreferences,
   registerPortableBackgroundUpdates,
 } from "./portable-background-updates.js";
+import { registerPortableDashboardDiagnostics } from "./portable-dashboard-diagnostics.js";
 import { registerPortableF5Refresh } from "./portable-f5-refresh.js";
 import Positioner from "electron-traywindow-positioner";
 import Bonjour from "bonjour-service";
@@ -729,6 +730,7 @@ async function createMainWindow(show = false) {
 
   registerPortableF5Refresh(mainWindow, () => config.get("allInstances") ?? []);
   registerPortableBackgroundUpdates(mainWindow, () => config.get("allInstances") ?? []);
+  registerPortableDashboardDiagnostics(mainWindow, () => config.get("allInstances") ?? []);
 
   mainWindow.webContents.on('did-fail-load', async (e, errorCode, validatedURL) => {
     logger.error(`WEBCONT - ${validatedURL} (code ${errorCode})`);
