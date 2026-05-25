@@ -1,5 +1,6 @@
 import { app, dialog, ipcMain, shell, globalShortcut, screen, Menu, Tray, BrowserWindow, powerMonitor } from "electron";
 import "./portable-paths.js";
+import { registerPortableF5Refresh } from "./portable-f5-refresh.js";
 import Positioner from "electron-traywindow-positioner";
 import Bonjour from "bonjour-service";
 import logger from "electron-log";
@@ -718,6 +719,8 @@ async function createMainWindow(show = false) {
   await tryLoadURL();
 
   createTray();
+
+  registerPortableF5Refresh(mainWindow, () => config.get("allInstances") ?? []);
 
   mainWindow.webContents.on('did-fail-load', async (e, errorCode, validatedURL) => {
     logger.error(`WEBCONT - ${validatedURL} (code ${errorCode})`);

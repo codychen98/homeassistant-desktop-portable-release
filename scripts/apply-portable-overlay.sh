@@ -5,6 +5,7 @@ VERSION="${1:?Usage: apply-portable-overlay.sh <version>}"
 OVERLAY="portable-overlay"
 
 cp "${OVERLAY}/portable-paths.js" ./portable-paths.js
+cp "${OVERLAY}/portable-f5-refresh.js" ./portable-f5-refresh.js
 cp "${OVERLAY}/app.js" ./app.js
 cp "${OVERLAY}/config.js" ./config.js
 cp "${OVERLAY}/.gitignore" ./.gitignore

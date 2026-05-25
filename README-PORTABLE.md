@@ -51,4 +51,4 @@ Back up or move the whole extracted folder to keep your Home Assistant URL and p
 
 Fork-specific files live in `portable-overlay/` and are copied on every upstream sync. If upstream changes `app.js` in ways you want, merge those edits into `portable-overlay/app.js` manually, then commit.
 
-Portable-specific runtime files: `portable-paths.js`, `app.js` (menu/startup), `config.js`, and `.github/workflows/`.
+Portable-specific runtime files: `portable-paths.js`, `portable-f5-refresh.js` (F5 dashboard reload), `app.js` (menu/startup + one-line F5 hook), `config.js`, and `.github/workflows/`.
